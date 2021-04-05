@@ -1,0 +1,129 @@
+[gd_scene load_steps=26 format=2]
+
+[ext_resource path="res://asset/sprite/red_knight.png" type="Texture" id=1]
+[ext_resource path="res://asset/script/unit.gd" type="Script" id=2]
+[ext_resource path="res://asset/animation/character_walking.tres" type="Animation" id=3]
+[ext_resource path="res://asset/animation/character_idle.tres" type="Animation" id=4]
+[ext_resource path="res://asset/sprite/hp.png" type="Texture" id=5]
+[ext_resource path="res://asset/sprite/hp_empty.png" type="Texture" id=6]
+[ext_resource path="res://asset/animation/character_attack.tres" type="Animation" id=7]
+[ext_resource path="res://asset/animation/character_state.tres" type="AnimationNodeStateMachinePlayback" id=8]
+[ext_resource path="res://asset/sprite/empty_target.png" type="Texture" id=9]
+[ext_resource path="res://asset/sound/maledeath3.wav" type="AudioStream" id=10]
+[ext_resource path="res://asset/animation/character_dead.tres" type="Animation" id=11]
+
+[sub_resource type="CapsuleShape2D" id=1]
+radius = 24.0
+
+[sub_resource type="CircleShape2D" id=2]
+radius = 304.0
+
+[sub_resource type="AnimationNodeAnimation" id=3]
+animation = "character_attack"
+
+[sub_resource type="AnimationNodeAnimation" id=4]
+animation = "character_dead"
+
+[sub_resource type="AnimationNodeAnimation" id=5]
+animation = "character_idle"
+
+[sub_resource type="AnimationNodeAnimation" id=6]
+animation = "character_walking"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=7]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=8]
+switch_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=9]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=10]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=11]
+switch_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=12]
+switch_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=13]
+switch_mode = 2
+
+[sub_resource type="AnimationNodeStateMachine" id=14]
+states/character_attack/node = SubResource( 3 )
+states/character_attack/position = Vector2( 223, 262 )
+states/character_dead/node = SubResource( 4 )
+states/character_dead/position = Vector2( 523, 267 )
+states/character_idle/node = SubResource( 5 )
+states/character_idle/position = Vector2( 223, 147 )
+states/character_walking/node = SubResource( 6 )
+states/character_walking/position = Vector2( 523, 147 )
+transitions = [ "character_idle", "character_attack", SubResource( 7 ), "character_attack", "character_idle", SubResource( 8 ), "character_idle", "character_walking", SubResource( 9 ), "character_walking", "character_idle", SubResource( 10 ), "character_attack", "character_dead", SubResource( 11 ), "character_idle", "character_dead", SubResource( 12 ), "character_walking", "character_dead", SubResource( 13 ) ]
+start_node = "character_idle"
+
+[node name="unit" type="KinematicBody2D"]
+script = ExtResource( 2 )
+
+[node name="collision_shape" type="CollisionShape2D" parent="."]
+shape = SubResource( 1 )
+
+[node name="sprite" type="Sprite" parent="."]
+position = Vector2( 0, 2.25178 )
+texture = ExtResource( 1 )
+
+[node name="detection_area" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="detection_area"]
+shape = SubResource( 2 )
+
+[node name="animation" type="AnimationPlayer" parent="."]
+playback_speed = 2.0
+anims/character_attack = ExtResource( 7 )
+anims/character_dead = ExtResource( 11 )
+anims/character_idle = ExtResource( 4 )
+anims/character_walking = ExtResource( 3 )
+
+[node name="animation_tree" type="AnimationTree" parent="."]
+tree_root = SubResource( 14 )
+anim_player = NodePath("../animation")
+active = true
+parameters/playback = ExtResource( 8 )
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="attack_delay" type="Timer" parent="."]
+one_shot = true
+
+[node name="range_attack_delay" type="Timer" parent="."]
+wait_time = 5.0
+one_shot = true
+
+[node name="timer_reset_target" type="Timer" parent="."]
+autostart = true
+
+[node name="hit_point" type="TextureProgress" parent="."]
+margin_left = -32.0
+margin_top = -64.0
+margin_right = 32.0
+margin_bottom = -56.0
+size_flags_horizontal = 3
+size_flags_vertical = 0
+value = 100.0
+texture_under = ExtResource( 6 )
+texture_progress = ExtResource( 5 )
+nine_patch_stretch = true
+__meta__ = {
+"_edit_use_anchors_": false,
+"_editor_description_": ""
+}
+
+[node name="targeting_sprite" type="Sprite" parent="."]
+position = Vector2( 7.62939e-06, 0 )
+scale = Vector2( 1.45, 1.25 )
+texture = ExtResource( 9 )
+
+[node name="audio" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 10 )
+[connection signal="body_entered" from="detection_area" to="." method="_on_detection_area_body_entered"]
+[connection signal="body_exited" from="detection_area" to="." method="_on_detection_area_body_exited"]
+[connection signal="timeout" from="timer_reset_target" to="." method="_on_timer_reset_target_timeout"]

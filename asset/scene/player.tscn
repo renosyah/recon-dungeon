@@ -1,0 +1,40 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://asset/scene/player_unit.tscn" type="PackedScene" id=1]
+[ext_resource path="res://asset/scene/touch_input.tscn" type="PackedScene" id=2]
+[ext_resource path="res://asset/script/player.gd" type="Script" id=3]
+[ext_resource path="res://asset/sprite/died.jpg" type="Texture" id=4]
+
+[node name="player" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="player_unit" parent="." instance=ExtResource( 1 )]
+position = Vector2( 515.484, 306.384 )
+
+[node name="canvas" type="CanvasLayer" parent="."]
+
+[node name="touch_input" parent="canvas" instance=ExtResource( 2 )]
+
+[node name="died_message" type="TextureRect" parent="canvas"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 4 )
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+[connection signal="hit_point_change" from="player_unit" to="canvas/touch_input" method="_on_player_unit_hit_point_change"]
+[connection signal="on_unit_died" from="player_unit" to="." method="_on_player_unit_on_unit_died"]
+[connection signal="on_unit_ready" from="player_unit" to="canvas/touch_input" method="_on_player_unit_on_unit_ready"]
+[connection signal="on_unit_spawn" from="player_unit" to="." method="_on_player_unit_on_unit_spawn"]
+[connection signal="stamina_point_change" from="player_unit" to="canvas/touch_input" method="_on_player_unit_stamina_point_change"]
+[connection signal="on_attack_button_press" from="canvas/touch_input" to="player_unit" method="_on_touch_input_on_attack_button_press"]
+[connection signal="on_exit_button_pressed" from="canvas/touch_input" to="." method="_on_touch_input_on_exit_button_pressed"]
+[connection signal="on_joystick_move" from="canvas/touch_input" to="player_unit" method="_on_touch_input_on_joystick_move"]
+[connection signal="on_throw_button_press" from="canvas/touch_input" to="player_unit" method="_on_touch_input_on_throw_button_press"]

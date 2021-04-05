@@ -1,0 +1,158 @@
+[gd_scene load_steps=26 format=2]
+
+[ext_resource path="res://asset/sprite/blue_knight.png" type="Texture" id=1]
+[ext_resource path="res://asset/script/player_control.gd" type="Script" id=2]
+[ext_resource path="res://asset/animation/character_walking.tres" type="Animation" id=3]
+[ext_resource path="res://asset/animation/character_idle.tres" type="Animation" id=4]
+[ext_resource path="res://asset/animation/character_attack.tres" type="Animation" id=5]
+[ext_resource path="res://asset/animation/character_state.tres" type="AnimationNodeStateMachinePlayback" id=6]
+[ext_resource path="res://asset/animation/character_dead.tres" type="Animation" id=7]
+[ext_resource path="res://asset/sprite/target.png" type="Texture" id=8]
+[ext_resource path="res://asset/sprite/hp_empty.png" type="Texture" id=9]
+[ext_resource path="res://asset/sprite/hp.png" type="Texture" id=10]
+
+[sub_resource type="CapsuleShape2D" id=1]
+radius = 24.0
+
+[sub_resource type="CircleShape2D" id=2]
+radius = 64.2077
+
+[sub_resource type="CircleShape2D" id=3]
+radius = 296.014
+
+[sub_resource type="AnimationNodeAnimation" id=4]
+animation = "character_attack"
+
+[sub_resource type="AnimationNodeAnimation" id=5]
+animation = "character_dead"
+
+[sub_resource type="AnimationNodeAnimation" id=6]
+animation = "character_idle"
+
+[sub_resource type="AnimationNodeAnimation" id=7]
+animation = "character_walking"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=8]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=9]
+switch_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=10]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=11]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=12]
+switch_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=13]
+switch_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=14]
+switch_mode = 2
+
+[sub_resource type="AnimationNodeStateMachine" id=15]
+states/character_attack/node = SubResource( 4 )
+states/character_attack/position = Vector2( 223, 262 )
+states/character_dead/node = SubResource( 5 )
+states/character_dead/position = Vector2( 523, 267 )
+states/character_idle/node = SubResource( 6 )
+states/character_idle/position = Vector2( 223, 147 )
+states/character_walking/node = SubResource( 7 )
+states/character_walking/position = Vector2( 523, 147 )
+transitions = [ "character_idle", "character_attack", SubResource( 8 ), "character_attack", "character_idle", SubResource( 9 ), "character_idle", "character_walking", SubResource( 10 ), "character_walking", "character_idle", SubResource( 11 ), "character_attack", "character_dead", SubResource( 12 ), "character_idle", "character_dead", SubResource( 13 ), "character_walking", "character_dead", SubResource( 14 ) ]
+start_node = "character_idle"
+
+[node name="player_unit" type="KinematicBody2D"]
+script = ExtResource( 2 )
+
+[node name="collision" type="CollisionShape2D" parent="."]
+shape = SubResource( 1 )
+
+[node name="sprite" type="Sprite" parent="."]
+position = Vector2( 0, 0.797053 )
+texture = ExtResource( 1 )
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="attack_area" type="Area2D" parent="."]
+position = Vector2( 0, 2.83929 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="attack_area"]
+shape = SubResource( 2 )
+
+[node name="attack_range_area" type="Area2D" parent="."]
+position = Vector2( 0, 2.83929 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="attack_range_area"]
+shape = SubResource( 3 )
+
+[node name="animation" type="AnimationPlayer" parent="."]
+playback_speed = 2.0
+anims/character_attack = ExtResource( 5 )
+anims/character_dead = ExtResource( 7 )
+anims/character_idle = ExtResource( 4 )
+anims/character_walking = ExtResource( 3 )
+
+[node name="animation_tree" type="AnimationTree" parent="."]
+tree_root = SubResource( 15 )
+anim_player = NodePath("../animation")
+active = true
+parameters/playback = ExtResource( 6 )
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="stamina_regeneration_time" type="Timer" parent="."]
+wait_time = 0.5
+autostart = true
+
+[node name="audio" type="AudioStreamPlayer2D" parent="."]
+
+[node name="targeting_sprite" type="Sprite" parent="."]
+visible = false
+position = Vector2( 7.62939e-06, 0 )
+scale = Vector2( 1.45, 1.25 )
+texture = ExtResource( 8 )
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="hit_point" type="TextureProgress" parent="."]
+margin_left = -32.0
+margin_top = -64.0
+margin_right = 32.0
+margin_bottom = -56.0
+size_flags_horizontal = 3
+size_flags_vertical = 0
+value = 100.0
+texture_under = ExtResource( 9 )
+texture_progress = ExtResource( 10 )
+nine_patch_stretch = true
+__meta__ = {
+"_edit_use_anchors_": false,
+"_editor_description_": ""
+}
+
+[node name="player_name" type="Label" parent="."]
+margin_left = -40.0
+margin_top = -96.0
+margin_right = 40.0
+margin_bottom = -64.0
+text = "Name"
+align = 1
+valign = 1
+autowrap = true
+clip_text = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="respawn_timer" type="Timer" parent="."]
+wait_time = 5.0
+[connection signal="body_entered" from="attack_area" to="." method="_on_attack_area_body_entered"]
+[connection signal="body_exited" from="attack_area" to="." method="_on_attack_area_body_exited"]
+[connection signal="body_entered" from="attack_range_area" to="." method="_on_attack_range_area_body_entered"]
+[connection signal="body_exited" from="attack_range_area" to="." method="_on_attack_range_area_body_exited"]
+[connection signal="timeout" from="stamina_regeneration_time" to="." method="_on_stamina_regeneration_time_timeout"]
+[connection signal="timeout" from="respawn_timer" to="." method="_on_respawn_timer_timeout"]

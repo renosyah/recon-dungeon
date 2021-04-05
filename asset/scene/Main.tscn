@@ -1,0 +1,51 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://asset/script/Main.gd" type="Script" id=1]
+[ext_resource path="res://asset/tileset/tiles.tres" type="TileSet" id=2]
+[ext_resource path="res://asset/fonts/montserrat_eb_48.tres" type="DynamicFont" id=3]
+[ext_resource path="res://asset/sprite/dice.png" type="Texture" id=4]
+
+[node name="Main" type="Node2D"]
+script = ExtResource( 1 )
+
+[node name="Rooms" type="Node" parent="."]
+
+[node name="camera" type="Camera2D" parent="."]
+current = true
+smoothing_enabled = true
+
+[node name="TileMap" type="TileMap" parent="."]
+show_behind_parent = true
+tile_set = ExtResource( 2 )
+cell_custom_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+format = 1
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="generate_and_play" type="Button" parent="CanvasLayer"]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -83.4271
+rect_min_size = Vector2( 0, 80 )
+custom_fonts/font = ExtResource( 3 )
+text = "Play"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="radomize" type="Button" parent="CanvasLayer"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -170.0
+margin_top = -220.362
+margin_right = -50.0
+margin_bottom = -115.0
+icon = ExtResource( 4 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+[connection signal="pressed" from="CanvasLayer/generate_and_play" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="CanvasLayer/radomize" to="." method="_on_generate_pressed"]
