@@ -29,12 +29,11 @@ expand = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
+[connection signal="ammo_change" from="player_unit" to="canvas/touch_input" method="_on_player_unit_ammo_change"]
 [connection signal="hit_point_change" from="player_unit" to="canvas/touch_input" method="_on_player_unit_hit_point_change"]
 [connection signal="on_unit_died" from="player_unit" to="." method="_on_player_unit_on_unit_died"]
 [connection signal="on_unit_ready" from="player_unit" to="canvas/touch_input" method="_on_player_unit_on_unit_ready"]
 [connection signal="on_unit_spawn" from="player_unit" to="." method="_on_player_unit_on_unit_spawn"]
-[connection signal="stamina_point_change" from="player_unit" to="canvas/touch_input" method="_on_player_unit_stamina_point_change"]
 [connection signal="on_attack_button_press" from="canvas/touch_input" to="player_unit" method="_on_touch_input_on_attack_button_press"]
-[connection signal="on_exit_button_pressed" from="canvas/touch_input" to="." method="_on_touch_input_on_exit_button_pressed"]
 [connection signal="on_joystick_move" from="canvas/touch_input" to="player_unit" method="_on_touch_input_on_joystick_move"]
-[connection signal="on_throw_button_press" from="canvas/touch_input" to="player_unit" method="_on_touch_input_on_throw_button_press"]
+[connection signal="on_player_press_reload" from="canvas/touch_input" to="player_unit" method="_on_touch_input_on_player_press_reload"]

@@ -2,6 +2,7 @@ extends Area2D
 
 export var attack_damage: = 15.0
 export var speed = 800
+export var spread = 0.1
 
 var direction = Vector2.ZERO
 var velocity = Vector2.ZERO
@@ -13,8 +14,10 @@ func _ready():
 	set_as_toplevel(true)
 
 func lauching(from, to: Vector2):
+	randomize()
 	position = from
 	velocity = to
+	velocity = velocity.rotated(rand_range(-spread, spread))
 	is_lauched = true
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -24,11 +27,10 @@ func _process(delta):
 		$sprite.rotation = velocity.angle()
 
 func _on_arrow_body_entered(body):
-	if not body is KinematicBody2D :
-		return
 	if body.is_a_parent_of(self):
 		return
-	body.take_damage(attack_damage)
+	if body is KinematicBody2D :
+		body.take_damage(attack_damage)
 	queue_free()
 
 

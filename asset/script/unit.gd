@@ -38,13 +38,12 @@ export var hit_point: = 100.0 setget _set_hit_point
 export var max_hit_point: = 100.0
 export var max_speed: = 250
 export var friction : = 500
-export var attack_distance: = 100.0 #80.0
-export var min_to_attack_distance: = 100.0 #100.0
+export var attack_distance: = 80.0
+export var min_to_attack_distance: = 200.0
 export var max_to_attack_distance: = 400.0
 export var attack_delay_value: = 1.0
 export var side = "bandit"
 export var texture: Texture = preload("res://asset/sprite/red_knight.png")
-
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -71,7 +70,6 @@ func _physics_process(delta):
 
 		if attack_delay.is_stopped() and distance_to_target <= min_to_attack_distance:
 			animation_state.travel("character_attack")
-			play_hit_sound()
 			target.take_damage(attack_damage)
 			attack_delay.start()
 		
@@ -83,7 +81,7 @@ func _physics_process(delta):
 # spawn spear
 func shoot_spear(dir):
 	var spear = preload("res://asset/scene/arrow.tscn").instance()
-	spear.attack_damage = attack_damage / 2
+	spear.attack_damage = attack_damage
 	spear.lauching(position, dir)
 	add_child(spear)
 
@@ -91,6 +89,7 @@ func shoot_spear(dir):
 #########################################################
 # unit hit point
 func take_damage(damage):
+	play_hit_sound()
 	self.hit_point -= damage
 	if self.hit_point <= 0:
 		set_physics_process(false)
@@ -118,6 +117,8 @@ func play_dead_sound():
 	animation_state.travel("character_dead")
 
 func play_hit_sound():
+	if audio.playing:
+		return
 	audio.stream = combats_sound[rng.randf_range(0,combats_sound.size())]
 	audio.play()
 	
@@ -139,6 +140,7 @@ func _on_detection_area_body_exited(_body):
 #########################################################
 # reset detection each 1 second
 func _on_timer_reset_target_timeout():
-	detection_area.monitoring = false
-	detection_area.monitoring = true
+#	detection_area.monitoring = false
+#	detection_area.monitoring = true
+	pass
 	

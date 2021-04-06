@@ -69,7 +69,7 @@ script = ExtResource( 2 )
 shape = SubResource( 1 )
 
 [node name="sprite" type="Sprite" parent="."]
-position = Vector2( 0, 0.797053 )
+position = Vector2( 0, 0.506499 )
 texture = ExtResource( 1 )
 __meta__ = {
 "_editor_description_": ""
@@ -103,7 +103,7 @@ __meta__ = {
 "_editor_description_": ""
 }
 
-[node name="stamina_regeneration_time" type="Timer" parent="."]
+[node name="health_regeneration_time" type="Timer" parent="."]
 wait_time = 0.5
 autostart = true
 
@@ -150,9 +150,18 @@ __meta__ = {
 
 [node name="respawn_timer" type="Timer" parent="."]
 wait_time = 5.0
+
+[node name="shot_delay" type="Timer" parent="."]
+wait_time = 0.04
+one_shot = true
+
+[node name="reload_time" type="Timer" parent="."]
+wait_time = 5.0
+one_shot = true
 [connection signal="body_entered" from="attack_area" to="." method="_on_attack_area_body_entered"]
 [connection signal="body_exited" from="attack_area" to="." method="_on_attack_area_body_exited"]
 [connection signal="body_entered" from="attack_range_area" to="." method="_on_attack_range_area_body_entered"]
 [connection signal="body_exited" from="attack_range_area" to="." method="_on_attack_range_area_body_exited"]
-[connection signal="timeout" from="stamina_regeneration_time" to="." method="_on_stamina_regeneration_time_timeout"]
+[connection signal="timeout" from="health_regeneration_time" to="." method="_on_health_regeneration_time_timeout"]
 [connection signal="timeout" from="respawn_timer" to="." method="_on_respawn_timer_timeout"]
+[connection signal="timeout" from="reload_time" to="." method="_on_reload_time_timeout"]

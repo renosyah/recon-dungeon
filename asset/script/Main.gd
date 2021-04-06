@@ -10,11 +10,11 @@ onready var radomize_button = $CanvasLayer/radomize
 onready var generate_and_play_button = $CanvasLayer/generate_and_play
 
 var tile_size = 64  # size of a tile in the TileMap
-var num_rooms = 50  # number of rooms to generate
+var num_rooms = 15  # number of rooms to generate
 var min_size = 6  # minimum room size (in tiles)
 var max_size = 15  # maximum room size (in tiles)
 var hspread = 400  # horizontal spread (in pixels)
-var cull = 0.5  # chance to cull room
+var cull = 0.2  # chance to cull room
 
 var path  # AStar pathfinding object
 var start_room = null
@@ -24,12 +24,18 @@ var player = null
 
 func _ready():
 	camera.zoom = Vector2(15,15)
-	radomize_button.visible = false
-	generate_and_play_button.visible = false
+	interface_visibility(false)
 	randomize()
 	make_rooms()
-	
+
+func interface_visibility(visible :bool = true):
+	radomize_button.visible = visible
+	generate_and_play_button.visible = visible
+
 func make_rooms():
+	path = null
+	interface_visibility(false)
+	
 	for i in range(num_rooms):
 		var pos = Vector2(rand_range(-hspread, hspread), 0)
 		var r = Room.instance()
@@ -51,10 +57,9 @@ func make_rooms():
 	yield(get_tree(), 'idle_frame')
 	# generate a minimum spanning tree connecting the rooms
 	path = find_mst(room_positions)
-	
+
 	radomize_button.visible = true
-	generate_and_play_button.visible = true
-			
+
 func _draw():
 	if start_room:
 		draw_string(font, start_room.position-Vector2(125,0), "start", Color(1,1,1))
@@ -72,6 +77,7 @@ func _draw():
 				var cp = path.get_point_position(c)
 				draw_line(Vector2(pp.x, pp.y), Vector2(cp.x, cp.y),
 						  Color(1, 1, 0), 15, true)
+		generate_and_play_button.visible = true
 
 func _process(delta):
 	update()
@@ -83,9 +89,7 @@ func _on_play_pressed():
 	player.position = start_room.position
 	add_child(player)
 	play_mode = true
-	radomize_button.visible = false
-	generate_and_play_button.visible = false
-	
+	interface_visibility(false)
 
 func _on_generate_pressed():
 	if play_mode:
@@ -97,28 +101,7 @@ func _on_generate_pressed():
 	start_room = null
 	end_room = null
 	make_rooms()
-	generate_and_play_button.visible = true
 	
-#func _input(event):
-#	if event.is_action_pressed('ui_select'):
-#		if play_mode:
-#			player.queue_free()
-#			play_mode = false
-#		for n in $Rooms.get_children():
-#			n.queue_free()
-#		path = null
-#		start_room = null
-#		end_room = null
-#		make_rooms()
-#	if event.is_action_pressed('ui_focus_next'):
-#		make_map()
-#	if event.is_action_pressed('ui_cancel'):
-#		camera.zoom = Vector2(1,1)
-#		player = Player.instance()
-#		player.position = start_room.position
-#		add_child(player)
-#		play_mode = true
-
 func find_mst(nodes):
 	# Prim's algorithm
 	# Given an array of positions (nodes), generates a minimum
@@ -230,7 +213,15 @@ func fill_room():
 	for room in $Rooms.get_children():
 		if room == start_room:
 			continue
-		for i in range(0,randi()%5+1):
+		for _i in range(0,randi() % 5+1):
 			var unit = preload("res://asset/scene/unit.tscn").instance()
-			unit.position = Vector2(room.position.x + randi()%54+12,room.position.y + randi()%12+45)
+			unit.position = get_random_pos_in_sphere(Vector2(room.position.x ,room.position.y))
 			add_child(unit)
+
+func get_random_pos_in_sphere(center : Vector2, radius : float = 100.0) -> Vector2:
+	randomize()
+	var angle = randi()%75+25 * PI
+	var direction = Vector2(cos(angle), sin(angle))
+	var pos = center + direction * radius
+	return pos
+
